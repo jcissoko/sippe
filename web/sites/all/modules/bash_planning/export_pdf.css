@@ -1,0 +1,148 @@
+.table
+{
+	border-collapse: collapse;
+	border-spacing: 0px;
+	/*padding:0px;*/
+	margin:auto;
+}
+
+.case_annee
+{
+	text-align:center;
+	font-weight:bold;
+	border: 1px solid #787777;
+}
+
+
+
+.case_classique
+{
+	padding:0px;
+	margin:0px;
+}
+
+.case_week_end
+{
+	background-color:#EEEEEE;
+}
+
+.case_vide
+{
+	border:none;
+	font-size:10px;
+}
+
+
+.nom_jour
+{
+	display:inline-block;
+	height:100%;
+	margin-right:5px;
+	font-size:8px;
+	color:#9b9b9b;
+}
+
+.cours_jour
+{
+	display:block;
+	/*overflow:hidden;*/
+	font-size:8px;
+	width: 40px;
+	height:100%;
+	text-align:center;
+	margin-right:5px;
+}
+
+.numero_salle
+{
+	color:red;
+	font-size:8px;
+	display:none;
+	color:#9b9b9b;
+}
+
+
+.jour_ferie
+{
+	font-size:8px;
+}
+
+td
+{
+	border: 1px solid #787777;
+	width: 65px;
+	height: 18px;
+	background-color:#ebebeb;
+}
+
+.case_numero_jour 
+{
+	width: 5px;
+}
+
+.case_mois
+{
+	background-color:black;
+	color:#ffffff;
+	text-align:center;
+	font-size:10px;
+}
+
+.case_jour_ferie
+{
+	background-color:#C1B9B0;
+}
+
+.light_blue
+{
+	background-color : #b3e4e4;
+}
+
+.blue
+{
+	background-color : #a0b2d0;
+}
+
+.grey
+{
+	background-color : #dde0e3;
+}
+
+.salmon
+{
+	background-color : #fbd9b6;
+}
+
+.white
+{
+	background-color : #FFFFFF;
+}
+
+/***************************************************** style tableau légende *******************************************/
+#table_legende
+{
+	margin-top : 20px;
+	margin-bottom: 20px;
+}
+
+.entete_legende
+{
+	background-color:black;
+	color:#ffffff;
+}
+
+.icon-delete-right
+{
+	display: inline-block;
+	float: right;
+}
+
+.case_initilales_legende
+{
+	width: 60px;
+}
+
+.case_nom_legende
+{
+	width: 234px;
+}

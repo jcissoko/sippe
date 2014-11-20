@@ -1,0 +1,6 @@
+name = "Consultation des offres de stage"
+description = "Module permettant la consultation des offres de stage"
+project = "consultation_offre_stage_blocs"
+version = "7.x-1.2"
+core = 7.x
+package = Sippenet

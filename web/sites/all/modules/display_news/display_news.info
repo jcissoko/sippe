@@ -1,0 +1,6 @@
+name = "Display news"
+description = "Affiche les news de la page d'accueil"
+project = "display_news"
+version = "7.x-1.2"
+core = 7.x
+package = Sippenet

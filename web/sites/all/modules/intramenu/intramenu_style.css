@@ -1,0 +1,149 @@
+#menu_intranet
+{
+	background-color:#373737;
+	color:#ffffff;
+	height:30px;
+	padding-bottom:5px;
+}
+
+#titre_intranet
+{
+	display:inline-block;
+	font-family:"LobsterTwo-Regular";
+	font-size:22px;
+	margin-left:5px;
+}
+
+#menu_connexion
+{
+	display:inline-block;
+	float:right;
+	margin-top:5px;
+	height:35px;
+}
+
+#menu_connexion input
+{
+	width:125px;
+	height:10px;
+	background-color:#696969;
+	border: 1px solid #7c7c7c;
+	color:#ffffff;
+	font-size:11px;
+}
+
+#menu_connexion img
+{
+	position:relative;
+	top:5px;
+	margin-right:5px;
+	margin-left:8px;
+}
+
+#mdp_oublie
+{
+	margin-left:8px;
+	display:inline-block;
+	font-style:italic;
+	font-size:11px;
+	margin-right: 10px;
+}
+
+#mdp_oublie a
+{
+	color:#ffffff;
+}
+
+input#button_connexion
+{
+	display:inline-block;	
+	background-color:#446cb3;
+	background-image:none;
+	border:none;
+	float:right;
+	height:35px;
+	padding:0px;
+	margin:0px;
+	width:80px;
+	position:relative;
+	top:-5px;
+	vertical-align:middle;
+	line-height:35px;
+	text-align:center;
+	color:#ffffff;
+	
+	border-radius: 0px;
+	-moz-border-radius: 0px;
+	-webkit-border-radius: 0px;
+	box-shadow: none;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+}
+
+a#button_deconnexion
+{
+	display:inline-block;
+	height:25px;
+	width:25px;
+	padding:0px;
+	margin:0px;
+	margin-right:5px;
+	margin-left:5px;
+	margin-top:5px;
+	text-align:center;
+	background-image: url('/sites/all/modules/intramenu/Images/deco.png');
+}
+
+a:hover#button_deconnexion
+{
+	background-image: url('/sites/all/modules/intramenu/Images/deco-hover.png');
+}
+
+#menu_deconnexion
+{
+	width:85%;
+	display:inline-block;
+	float:right;
+	text-align:right;
+	height:35px;
+	line-height:35px;
+}
+
+a#profil
+{
+	font-size:15px;
+	color:#ffffff;
+	width:150px;
+	overflow:hidden;
+	display:inline-block;
+	padding:0px;
+	margin:0px;
+	vertical-align:middle;
+	line-height:1.2;
+	margin-bottom:15px;
+}
+
+a:hover#profil
+{
+	color:#e0e0e0;
+}
+
+
+a.elt_intranet
+{
+	font-size:14px;
+	color:#ffffff;
+	overflow:hidden;
+	display:inline-block;
+	padding:0px;
+	margin:0px;
+	vertical-align:middle;
+	line-height:1.2;
+	margin-bottom:15px;
+	margin-left:15px;
+}
+
+a:hover.elt_intranet
+{
+	color:#e0e0e0;
+}

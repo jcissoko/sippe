@@ -1,0 +1,149 @@
+<?php
+/**
+* Implementation of creation_de_candidature_etudiant().
+*/
+function creation_candidature_etudiant_block_info(){
+	$blocks = array(); 
+	$blocks['creation_candidature'] = array(
+		'info' => t("Création des candidatures administration"),
+		'cache' => DRUPAL_NO_CACHE
+		);
+	return $blocks;
+}
+
+function creation_candidature_etudiant_permission() {
+  return array('access creation_candidature_etudiant' => array('title' => t('Accès creation candidatures')));
+}
+
+function creation_candidature_etudiant_block_view($block_name=''){
+	
+	$block = array();
+
+	switch ($block_name) {
+		case 'creation_candidature':
+			$block['subject'] = t('Création des candidatures');
+			$block['content'] = drupal_get_form('creation_candidature_etudiant_formulaire');
+			break;
+	}
+
+	return $block;
+}
+
+function creation_candidature_etudiant_init(){
+
+}
+
+
+function creation_candidature_etudiant_formulaire(){
+
+	$form = array();
+
+	if(user_access('access creation_candidature_etudiant')){
+
+		suppressionVieilleCandidature();
+
+		drupal_add_css(drupal_get_path('module', 'creation_candidature_etudiant') . '/css/styleCreationCandidature.css');
+		
+
+		$var_tampon=variable_get('contenuform');
+		variable_del('contenuform');
+			
+		if($var_tampon != NULL){
+			$id = db_insert('candidature')
+				->fields(array(
+				'nom_candidat' => $var_tampon['nomCandidat'],
+				'prenom_candidat' => $var_tampon['prenomCandidat'],
+				'nDossier' => $var_tampon['numDossier'],	
+				'email_candidat' => $var_tampon['emailCandidat'],
+				'annee_candidature'=> date('Y')	
+				))->execute();
+
+			if($id>0){
+
+				$messageMailGestionCandidature = 
+							"<html><head>Votre candidature au Master SIPPE a bien été créée.</head><body><p>Pour suivre l'état de votre candidature au sein du Master connéctez-vous au site rubrique admission suivis de candidature.<br/>
+								</body></html>";
+
+				$headers = 'MIME-Version: 1.0' . "\r\n";
+				$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+
+		     	// En-têtes additionnels
+		     	$headers .= 'To: ' . $var_tampon['prenomCandidat'] . ' ' . $var_tampon['nomCandidat'] . ' <' . $var_tampon['emailCandidat'] . '>' . "\r\n";
+		     	$headers .= 'From: VAIRET Isabelle <i.vairet@vichy-valallier.fr>' . "\r\n";
+
+		     	// Envoi
+		     	mail( $var_tampon['emailCandidat'], "Votre candidature au Master SIPPE", $messageMailGestionCandidature, $headers);
+
+			   	drupal_set_message("La candidature a bien été enregistrée.");
+			}
+			else{
+				drupal_set_message("Un problème est survenu lors de la création du candidat.", 'error');
+			}
+
+		}
+	 		
+		$form['infoCandidat']=array(
+			'#title' => "Création de candidatures",
+			'#type' => 'fieldset',
+			'#weight'=>4
+
+		);
+
+		$form['infoCandidat']['nomCandidat']=array(
+			'#title' => 'Nom contact',
+			'#type' => 'textfield',
+			'#required' => TRUE
+		);
+
+		$form['infoCandidat']['prenomCandidat']=array(
+			'#title' => "Prenom Contact",
+			'#type' => 'textfield',
+			'#required' => TRUE
+		);
+
+		$form['infoCandidat']['numDossier']=array(
+			'#title' => 'Numéro de dossier',
+			'#type' => 'textfield',
+			'#required' => TRUE
+		);
+
+		$form['infoCandidat']['emailCandidat']=array(
+			'#title' => 'Adresse email',
+			'#type' => 'textfield',
+			'#required' => TRUE	
+		);
+
+		$form['infoCandidat']['valider']=array(
+			'#type' => 'submit',
+			'#value' => t('Envoyer')
+		);
+
+		
+	}
+	else{
+		drupal_set_message("Vous n'êtes pas autorisé à accéder à cette page.",'warning');
+	}
+	return $form;
+}
+
+function creation_candidature_etudiant_formulaire_submit(&$form,&$form_state){
+	variable_set('contenuform',$form_state["values"]);
+} 
+
+
+function suppressionVieilleCandidature(){
+
+		$lesdatas = db_select('candidature', 'c')
+					->fields('c', array('id_candidature','annee_candidature'))
+					->execute();
+
+		while($resultat = $lesdatas->fetchAssoc() ){
+
+			if($resultat['annee_candidature'] != date('Y')){
+				$num_deleted = db_delete('candidature')
+							  ->condition('id_candidature', $resultat['id_candidature'], "=")
+							  ->execute();
+			}
+		}
+
+ }

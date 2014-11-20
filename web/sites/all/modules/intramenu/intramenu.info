@@ -1,0 +1,6 @@
+name = "Intramenu"
+description = "Affiche les menus de l'intranet et le menu de connexion"
+project = "intranet"
+version = "7.x-1.2"
+core = 7.x
+package = Sippenet

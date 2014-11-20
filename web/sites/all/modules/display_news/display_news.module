@@ -1,0 +1,150 @@
+<?php
+
+
+	function display_news_block_info()
+	{
+		$blocks['display_news'] = array(
+			'info' => t('Display news'),
+			'cache' => 3,
+		);
+		return $blocks ;
+	}
+	
+	function display_news_block_view($delta = '') 
+	{	
+		switch($delta)
+		{
+			case 'display_news' :
+			$block['subject'] = t('');
+			$block['content'] = display_news_view();
+			break ;
+		}
+		return $block ;
+	}
+
+	function display_news_permission() 
+	{
+		return array('modify display_news' => array( 'title' => t('Modification et création des news')));
+	}
+	
+	
+	function display_news_view() 
+	{	
+		drupal_add_css(drupal_get_path('module', 'display_news') . '/imposeTonStyle.css');
+		drupal_add_js('http://code.jquery.com/jquery-1.10.1.min.js');
+		drupal_add_js(drupal_get_path('module', 'display_news') . '/truncate_news.js');
+		
+		
+		$page = 1;
+		$nb_news_par_page = 3;
+	
+		if(!empty($_GET['page']))
+		{
+			$page = $_GET['page'];
+		}
+	
+		$result_nb_total_news = db_select('node')->condition('type', 'news', '=')->fields('node')->execute();
+		$nb_total_news = $result_nb_total_news->rowCount();
+		$pageFinale = ceil($nb_total_news / 3);
+
+		if($page <= $pageFinale)
+		{
+			//numéro de la première news à être affichée sur la page
+			$num_first_news_on_page = $page * $nb_news_par_page - $nb_news_par_page;
+			
+			$display = '<h1 class="titre">Dernières actualités</h1>';
+		
+		
+			if(user_access('modify display_news'))
+			{
+				$display .= '<a id="ajout_news" href="node/add/news" title="Ajouter une news"></a>';
+			}
+				
+			$query = db_select('node','n');
+			$query->condition('type', 'news', '=');
+			$query->fields('n', array('nid', 'type', 'created', 'title'));
+			$query->fields('f',array('body_value'));
+			$query->orderBy('n.created', 'DESC');
+			$query->range($num_first_news_on_page, $nb_news_par_page);
+			
+			$query->join('field_data_body','f','f.entity_id = n.nid');
+
+			$result = $query->execute();
+			$id_news = 0;
+			
+			
+			while($record = $result->fetchAssoc())
+			{	
+				$dateNews = date('d/m/Y', $record['created']);
+			
+				$query = db_select('field_data_field_img','f');
+				$query->condition('entity_id', $record['nid'], '=');
+				$query->fields('file', array('fid', 'filename'));
+				$query->join('file_managed','file','file.fid = f.field_img_fid');
+				
+				$result_img = $query->execute();
+				$record_img = $result_img->fetchAssoc();
+				
+				if(!empty($record_img))
+				{
+					$img_path = base_path(). 'sites/default/files/' . $record_img['filename'];
+				}
+				else
+				{
+					$img_path = base_path(). 'sites/default/files/defaut.png';
+				}
+				
+				$display .= '<div class="one_news">';
+				$display .= '<div class="img_news"><img src="'.$img_path.'"/></div>';
+				$display .= '<div class="content_news">';
+				$display .= '<div class="first_line_news">';
+					$display .= '<div class="titre_news">'.$record['title'].'</div>';
+			
+				
+				if(user_access('modify display_news'))
+				{
+					$display .= '<div class="buttons_admin"><a id="edit_news" href="'.base_path(). 'node/' .$record['nid'].'/edit" title="Editer la news"></a><a id="supp_news" href="'.base_path(). 'node/' .$record['nid'].'/delete" title="supprimer la news"></a></div>';
+				}
+					
+					$display .= '<div class="date_news">'.$dateNews.'</div>';
+				$display .= '</div>';
+				$display .= '<div class="body_news" id="'.$id_news.'">'.$record['body_value'].'</div>';
+				$display .= '<div class="lien_news"><a href="'.base_path(). 'node/' .$record['nid'].'">Lire la suite</a></div></div></div>';
+
+				$id_news++;
+			}
+			
+			$display .= '<div class="pager_news">';
+			
+			if($page > 1)
+			{
+				$page_precedente = $page - 1;
+				$display .= '<a href="?page='.$page_precedente.'">&lsaquo;</a> ';
+			}
+			
+			
+			for($cpt = 1 ; $cpt <= $pageFinale ; $cpt++)
+			{
+				if($cpt == $page)
+				{
+					$display .= '<a class="active" href="?page='.$cpt.'">'.$cpt.'</a>';
+				}
+				else
+					$display .= '<a href="?page='.$cpt.'">'.$cpt.'</a>';	
+			}
+			
+			
+			if($page < $pageFinale)
+			{
+				$page_suivante = $page + 1;
+				$display .= '<a href="?page='.$page_suivante.'">&rsaquo;</a>';
+			}
+			$display .= '</div>';
+		}
+		else
+		{
+			drupal_set_message("Cette page ne contient pas de news.", "warning", false);
+		}		
+		return $display;
+	}
+	

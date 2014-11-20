@@ -1,0 +1,7 @@
+;$Id$
+name = "Gestion candidature etudiant"
+description = "Module permettant la gestion des candidature étudiantes"
+project = "gestion_de_candidature_etudiant_blocs"
+version = "7.x-1.2"
+core = 7.x
+package = Sippenet

@@ -1,0 +1,6 @@
+name = "Consultation des rapports de stage"
+description = "Module permettant la consultation des rapports de stage"
+project = "consultation_rapport_stage_blocs"
+version = "7.x-1.2"
+core = 7.x
+package = Sippenet

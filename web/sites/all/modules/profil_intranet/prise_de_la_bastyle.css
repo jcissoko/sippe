@@ -1,0 +1,64 @@
+img#avatar 
+{
+	height:210px;
+	width:210px;
+	padding:5px;
+	border:1px solid #d4d4d4;
+	margin-right:20px;
+}
+
+#div_avatar
+{
+	float:left;
+}
+
+#div_info
+{
+	line-height:40px;
+	margin-top:20px;
+	height:220px;
+}
+
+
+.info_label
+{
+	width:200px;
+	margin-right:10px;
+	display:inline-block;
+}
+
+.info_label_gras
+{
+	width:200px;
+	font-weight:bold;
+	display:inline-block;
+}
+
+.champ
+{
+	width:300px;
+	margin-bottom:20px;
+}
+
+#button_validate
+{
+	color: white;
+	border: none;
+	font-family : Arial;
+	font-weight:normal;
+	width:140px;
+	font-size:14px;
+	display:block;
+	margin-bottom:100px;
+}
+
+input#avatar_input
+{
+	margin-bottom:50px;
+}
+
+#label_avatar
+{
+	font-weight:bold;
+	display:inline-block;
+}

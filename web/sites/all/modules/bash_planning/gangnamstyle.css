@@ -1,0 +1,284 @@
+.table
+{
+	border-collapse: collapse;
+	border-spacing: 0px;
+	padding:0px;
+	margin:0px;	
+}
+
+
+.case_numero_jour
+{
+	font-size:12px;
+	height:16px;/**/
+}
+
+.case_annee
+{
+	text-align:center;
+	font-weight:bold;
+}
+
+.case_mois
+{
+	border: 1px solid #787777;
+	font-size:10px;
+	background-color:black;
+	color:#ffffff;
+	text-align:center;
+	padding:0px;
+	margin:0px;
+	width: 8%;
+}
+
+.case_classique
+{
+	border: 1px solid #787777;
+	padding:0px;
+	margin:0px;
+	font-size:8px;
+	text-align:center;
+	padding-left:0px;
+	height:16px;/**/
+}
+
+.case_classique :hover
+{
+	cursor:pointer;
+}
+
+.case_week_end
+{
+	border: 1px solid #787777;
+
+	font-size:8px;
+	text-align:center;
+	padding:0px;
+	background-color:#EEEEEE;
+	height:16px;/**/
+}
+
+.case_jour_ferie
+{
+	border: 1px solid #787777;
+	font-size:8px;
+	text-align:center;
+	padding:0px;
+	background-color:#C1B9B0;
+	height:16px;/**/
+}
+
+.case_vide
+{
+	border:none;
+	font-size:10px;
+	text-align:center;
+	height:16px;/**/
+}
+
+.nom_jour
+{
+	display:inline-block;
+	width:5px;
+	height:100%;
+	font-size:10px;
+	float: left;
+	padding-left: 2px;
+	height:16px;/**/
+	color:#9b9b9b;
+}
+.cours_jour
+{
+	margin-right:0px;
+	display:inline-block;
+	padding:0px;
+	overflow:hidden;
+	width:27px;
+	height:16px;/**/
+}
+
+.jour_ferie
+{
+	margin-right:0px;
+	display:inline-block;
+	padding:0px;
+	height:16px;/**/
+}
+
+.numero_salle
+{
+	color:#9b9b9b;
+	display:inline-block;
+	font-size:8px;
+	float:right;
+	padding-right: 2px;
+	overflow:hidden;
+	width:15px;
+	height:16px;/**/
+}
+
+input {
+	width: 45%;
+	
+}
+
+label
+{
+    display: block;
+    width: 50%;
+    float: left;
+}
+
+.ui-dialog-title
+{
+	display:inline-block;
+	width:88%;
+}
+
+.control_button
+{
+	display: inline-block;
+	width: 42px;
+	height: 32px;
+	margin-bottom:10px;
+	margin-right:10px;
+}
+
+/************************************************************* Boutons ****************************************************************/
+#dl_pdf_button
+{
+	background: url(Images/picto-telecharger-pdf.png) no-repeat;
+}
+
+#dl_pdf_button:hover
+{
+	background: url(Images/picto-telecharger-pdf-h.png) no-repeat;
+}
+
+#mail_button
+{
+	background: url(Images/icone-mail.png) no-repeat;
+}
+
+#mail_button:hover
+{
+	background: url(Images/icone-mail-h.png) no-repeat;
+}
+
+#add_cours_button
+{
+	background: url(Images/icone-cours.png) no-repeat;
+}
+
+#add_cours_button:hover
+{
+	background: url(Images/icone-cours-h.png) no-repeat;
+}
+
+#add_legende
+{
+	display: inline-block;
+	width: 42px;
+	height: 40px;
+	background: url(Images/icone-prof.png) no-repeat;
+}
+
+#add_legende:hover
+{
+	background: url(Images/icone-prof-h.png) no-repeat;
+}
+
+/************************************************************* Constantes de couleurs pour les évènements du calendrier ***************/
+
+.light_blue
+{
+	background-color : #b3e4e4;
+}
+
+.blue
+{
+	background-color : #a0b2d0;
+}
+
+.grey
+{
+	background-color : #dde0e3;
+}
+
+.salmon
+{
+	background-color : #fbd9b6;
+}
+
+.white
+{
+	background-color : #FFFFFF;
+}
+
+/*************************************************************** Animation d'attente lors des requêtes AJAX **********************/
+.modal {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, 0.8 ) 
+                url('Images/loader-ajax.gif') 		/* http://sampsonresume.com/labs/pIkfp.gif */
+                50% 50%
+                no-repeat;
+}
+
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading {
+    overflow: hidden;
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+body.loading .modal {
+    display: block;
+}
+
+/***************************************************** style tableau légende *******************************************/
+#table_legende
+{
+	margin-top : 20px;
+	margin-bottom: 20px;
+}
+
+.entete_legende
+{
+	background-color:black;
+	color:#ffffff;
+}
+
+.icon-delete-right
+{
+	display: inline-block;
+	float: right;
+}
+
+.case_initiales_legende
+{
+	/*width: 20px;*/
+}
+
+.case_nom_legende
+{
+	width: 190px;
+}
+
+
+/****************************************** formulaire d'ajout de légende *******************/
+#content_form_legende
+{
+	margin-top : 25px;		/*on décalle l'ensemble des inputs et label du formulaire pour que le fieldset ne les cache pas*/
+	padding-left : 20px;
+}
+
+
+
+

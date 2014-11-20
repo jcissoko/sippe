@@ -1,0 +1,179 @@
+<?php
+// $Id$
+/* 
+** Renseigne drupal sur le nouveau bloc que l'on va déclarer.
+**/
+function gestion_candidature_etudiant_block_info(){
+	$blocks = array(); 
+	$blocks['gestion_candidature'] = array(
+		'info' => t("Gestion des candidatures administration"),
+		'cache' => DRUPAL_NO_CACHE,
+		);
+
+	$blocks['affichage_candidature'] = array(
+		'info' => t("Affichage candidatures administration"),
+		'cache' => DRUPAL_NO_CACHE,
+		);
+
+	return $blocks;
+}
+
+function gestion_candidature_etudiant_permission() {
+  return array('access gestion_candidature_etudiant' => array('title' => t('Accès gestion candidatures')));
+}
+
+function gestion_candidature_etudiant_block_view($block_name=''){
+
+	$block = array();
+		switch ($block_name) {
+			case 'gestion_candidature':
+				$block['subject'] = t('Gestion des candidatures');
+				$block['content'] = drupal_get_form('afficherFormulaire');
+				break;
+
+			case 'affichage_candidature':
+				$block['subject'] = t('');
+				$block['content'] = afficherResultat();
+				break;
+		}
+	return $block;
+
+}
+
+function gestion_candidature_etudiant_init(){
+
+}
+
+function afficherFormulaire()
+{	
+	$form = array();
+	if(user_access('access gestion_candidature_etudiant')){
+		drupal_add_css(drupal_get_path('module', 'gestion_candidature_etudiant') . '/css/styleConsultationCandidature.css');
+		drupal_add_js(drupal_get_path('module', 'gestion_candidature_etudiant')  . '/js/jquery.js');	
+		drupal_add_js(drupal_get_path('module', 'gestion_candidature_etudiant')  . '/js/gestion_candidature_etudiant.js');
+		
+
+		$form['gestionCandidature']=array(
+			'#title' => "Rechercher",
+			'#type' => 'fieldset',
+			'#weight'=>4
+		);
+
+		$form['gestionCandidature']['champsRecherche']=array(
+			'#title' => 'Rechercher',
+			'#type' => 'textfield',
+			'#required' => TRUE
+		);
+
+		$form['gestionCandidature']['typeR']=array(
+			'#type' => 'radios',
+			'#options' =>array('num' =>t('Numéro dossier'),'nom' =>t('Nom candidat')
+				),
+			'#required' => TRUE
+		);	
+
+		$form['gestionCandidature']['valider']=array(
+			'#type' => 'submit',
+			'#value' => t('Afficher'),
+		);
+	}
+	return $form;
+	
+} 
+
+function afficherFormulaire_submit($form,&$form_state){
+	variable_set('contenuform',$form_state["values"]);
+}
+
+function afficherResultat(){
+	
+	if(user_access('Accès gestion candidatures')){
+
+		$var_tampon=variable_get('contenuform');
+		variable_del('contenuform');
+
+		$tableauDonnees = "<div class='lignePDF'>";
+
+		$tableauDonnees .= "<div class='elemPDF'>Générer le PDF : <img class='genererCandidature' src='". drupal_get_path('module', 'gestion_candidature_etudiant') . "/images/dl_candidatures.png' alt='Générer le fichier de candidature' title='Générer le fichier de candidature'/></div>";
+
+		$tableauDonnees .= "<div class='elemPDF'>Télécharger le PDF : <a href='" . drupal_get_path('module', 'gestion_candidature_etudiant') . "/dlCandidature.php'><img src='" . drupal_get_path('module', 'gestion_candidature_etudiant') . "/images/dl_candidatures.png' title='Téléchargement candidatures' alt='Téléchargement candidatures'/></a></div>";	
+
+		$tableauDonnees .= "</div>";
+
+		if($var_tampon != NULL){
+
+			//$tableauEtat = array("attente", "accepte", "refuse");
+			//$tableauEtat = array("icone-attente", "icone-acceptee", "icone-rejetee");
+
+			$type=$var_tampon['typeR'];
+			$tableauType = array('num' => 'nDossier', 'nom' => 'nom_candidat');
+
+			$candidats = db_select('candidature', 'c')
+					->fields('c')
+					->condition($tableauType[$type], $var_tampon['champsRecherche'])
+					->execute()->fetchAll();
+
+			$tableauDonnees .= "<table class='tableauCandidats'>
+									<tr>
+										<th>N°Dossier</th>
+										<th>Nom</th>
+										<th>Prénom</th>
+										<th>E-mail</th>
+										<th>Etat</th>
+									</tr>";
+
+			foreach ($candidats as $value) {
+
+				if($value->etat == 1){
+					$lesOptions = "
+										<option value='Acceptée' >Accepté</option>
+										<option value='En attente' selected>Attente</option>
+										<option value='Refusée' >Refusé</option>
+								";
+				}elseif($value->etat == 2){
+					$lesOptions = "
+										<option value='Acceptée' selected>Accepté</option>
+										<option value='En attente' >Attente</option>
+										<option value='Refusée' >Refusé</option>
+								";				
+				}elseif($value->etat == 3){
+					$lesOptions = "
+										<option value='Acceptée' >Accepté</option>
+										<option value='En attente' >Attente</option>
+										<option value='Refusée' selected>Refusé</option>
+								";				
+				}
+
+				$tableauDonnees .= "
+					<tr>
+							<td class='thDossier'>". $value->nDossier ."</td>
+							
+							<td class='thNom'>". $value->nom_candidat ."</td>
+						
+							<td class='thPrenom'>". $value->prenom_candidat ."</td>
+
+							<td class='thEmail'>". $value->email_candidat . "</td>
+									
+							<td class='thEtat'>
+								<SELECT class='selectEtat_". $value->id_candidature ."' id='selectEtat_".$value->id_candidature."' name='etat'> " . $lesOptions . "</SELECT>
+								<img class='editionEtat img_" . $value->id_candidature . "' width='22px' src='". drupal_get_path('module', 'gestion_candidature_etudiant') . "/images/valider.png' alt='Télécharger candidatures'/>
+							</td>
+					</tr>";
+			}
+
+			$tableauDonnees .= "</table>";
+
+		}
+		$tableauDonnees .= "<div class='modal'></div>";
+
+	}else{
+		$tableauDonnees = "Vous n'êtes pas autorisé à accéder à cette page.";
+	}
+
+	return $tableauDonnees;
+}
+
+	/* Avec les boules de couleurs
+
+	<td class='thEtat'><i class='iconeCandidature icone-inactive pos1'></i>" .  "<i class='iconeCandidature ". $tableauEtat[intval($value->etat)-1] ." pos2'></i><i class='iconeCandidature icone-inactive pos3'></i></td>*/
+?>

@@ -1,0 +1,88 @@
+<?php
+
+
+	function intramenu_block_info()
+	{
+		$blocks['intramenu'] = array(
+			'info' => t('Intramenu'),
+			'cache' => 3,
+		);
+		return $blocks ;
+	}
+	
+	function intramenu_block_view($delta = '') 
+	{	
+		switch($delta)
+		{
+			case 'intramenu' :
+			$block['subject'] = t('');
+			$block['content'] = intramenu_view();
+			break ;
+		}
+		return $block ;
+	}
+
+	
+	function intramenu_permission() 
+	{
+		return array('intramenu' => array( 'title' => t('Affichage du menu de l\'intranet')));
+	}
+	
+	function intramenu_view() 
+	{	
+		drupal_add_css(drupal_get_path('module', 'intramenu') . '/intramenu_style.css');
+	
+		$display = "<div id='menu_intranet'>";
+			$display .= "<div id='titre_intranet'>Espace Intranet</div>";
+
+		if(!empty($_POST['login']) && !empty($_POST['password']))
+		{
+			$uid = user_authenticate($_POST['login'], $_POST['password']);
+			global $user;
+			$user = user_load($uid);
+			if($user->uid == 0)
+			{
+				drupal_set_message('Mauvais identifiant ou mot de passe.', 'error', FALSE);
+			}
+			$login_array = array ('name' => $user->name);
+			user_login_finalize($login_array);
+		}
+		
+		$utilisateur = $GLOBALS['user'];
+
+
+		if(!user_access('intramenu'))
+		{
+			$display .= "<div id='menu_connexion'>";
+				$display .= "<form action='' method='POST'>";
+					$display .= "<a href='/user' title='se connecter'><img src='".base_path().drupal_get_path('module', 'intramenu') . "/Images/user.png' alt='login'/></a>";
+					$display .= "<span id='connexion_d_none'><input name='login' id='login' type='text' placeholder='Identifiant'/>";
+					$display .= "<img src='".base_path().drupal_get_path('module', 'intramenu') . "/Images/lock.png' alt='password'/>";
+					$display .= "<input name='password' id='password' type='password' placeholder='Mot de passe'/>";
+					$display .= "<div id='mdp_oublie'><a href='/user/password'>Mot de passe oublié ?</a></div>";
+					$display .= "<input type='submit' id='button_connexion' value='Connexion'/></span>";
+				$display .= "</form>";
+			$display .= "</div>";
+		}
+		else
+		{
+			$display .= "<div id='menu_deconnexion'>";
+			
+				$display .= "<a class='elt_intranet' href='/SIPPENET/web/?q=Intranet/CreationCandidaturesEtudiant'>Création Candidatures</a>";
+				$display .= "<a class='elt_intranet' href='/SIPPENET/web/?q=Intranet/GestionCandidaturesEtudiants'>Candidatures</a>";
+				$display .= "<a class='elt_intranet' href='/SIPPENET/web/?q=Intranet/Planning/M2'>Emploi du temps</a>";
+				$display .= "<a class='elt_intranet' href='/SIPPENET/web/?q=Intranet/ConsultationRapportStage'>Rapports de stage</a>";
+				$display .= "<a class='elt_intranet' href='/SIPPENET/web/?q=Intranet/ConsultationOffreStage'>Stages & emplois</a>";
+				$display .= "<a id='profil' href='/SIPPENET/web/?q=Intranet/Profil'>".$utilisateur->name."</a>";
+				$display .= "<a href='/user/logout' id='button_deconnexion'></a>";
+		
+			$display .= "</div>";
+			
+		}
+			
+		$display .=	"</div>";
+		
+		
+		return $display;
+	}
+	

@@ -1,0 +1,68 @@
+<?php
+
+
+	function shortcuts_accueil_block_info()
+	{
+		$blocks['shortcuts_accueil'] = array(
+			'info' => t('Shortcuts accueil'),
+			'cache' => 3,
+		);
+		return $blocks ;
+	}
+	
+	function shortcuts_accueil_block_view($delta = '') 
+	{
+		switch($delta)
+		{
+			case 'shortcuts_accueil' :
+			$block['subject'] = t('');
+			$block['content'] = shortcuts_accueil_view();
+			break ;
+		}
+		return $block ;
+	}
+
+	
+	function shortcuts_accueil_init()
+	{
+		
+	}
+	
+		
+	function shortcuts_accueil_view() 
+	{	
+		drupal_add_css(drupal_get_path('module', 'shortcuts_accueil') . '/freestyle.css');
+	
+		$shortcuts="
+		
+		<div id='shortcuts_global'>
+			<a href='Formation/Presentation'>
+				<div class='block_shortcuts' id='img_menu_formation'>
+					<div class='text_shortcuts'>Formation</div>	
+				</div>
+			</a>
+		
+			<a href='Metiers/LesMetiers'>
+				<div class='block_shortcuts block_metier' id='img_menu_metier'>
+					<div class='text_shortcuts'>Métiers</div>	
+				</div>
+			</a>
+		
+			<a href='Etudiants/AssociationAEAD'>
+				<div class='block_shortcuts block_asso' id='img_menu_asso'>
+					<div class='text_shortcuts'>Asso étudiante</div>	
+				</div>
+			</a>
+	
+			<a href='/Entreprises/Partenaires'>
+				<div class='block_shortcuts' id='img_menu_partenaires'>
+					<div class='text_shortcuts'>Partenaires</div>	
+				</div>
+			</a>
+		</div>
+		";
+		
+		
+		return $shortcuts;
+	}
+	

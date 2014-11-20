@@ -1,0 +1,119 @@
+<?php
+// $Id$
+/* 
+** Renseigne drupal sur le nouveau bloc que l'on va déclarer.
+**/
+function consultation_candidature_etudiant_block_info(){
+	$blocks = array(); 
+	$blocks['consultation_de_candidature'] = array(
+		'info' => t("Consultation des candidatures Etudiant"),
+		'cache' => DRUPAL_NO_CACHE,
+		);
+
+	$blocks['resultat_etat_candidature'] = array(
+		'info' => t("Résultat consultation candidatures Etudiant"),
+		'cache' => DRUPAL_NO_CACHE,
+		);
+
+	return $blocks;
+}
+
+function consultation_candidature_etudiant_block_view($block_name=''){
+
+	$block = array();
+
+	switch ($block_name) {
+		case 'consultation_de_candidature':
+			$block['subject'] = t('Consulter vos candidatures');
+			$block['content'] = drupal_get_form('afficherFormulaireConsultation');
+			break;
+		case 'resultat_etat_candidature':
+			$block['subject'] = t('Suivre votre candidature');
+			$block['content'] = resultat_consultation_candidature();
+			break;
+	}
+
+	return $block;
+}
+
+function consultation_candidature_etudiant_init(){
+
+}
+
+function afficherFormulaireConsultation()
+{	
+	drupal_add_css(drupal_get_path('module', 'consultation_candidature_etudiant') . '/css/styleConsultationCandidatureEtudiant.css');
+	$var_tampon_consultation=variable_get('contenuFormConsultation');
+	
+	if($var_tampon_consultation == NULL){
+		$form = array();
+		$form['consultationCandidature']=array(
+			'#title' => "Renseigner vos informations pour consulter l'état de votre candidature",
+			'#type' => 'fieldset',
+			'#weight'=>5
+		);
+
+		$form['consultationCandidature']['Nom']=array(
+			'#title' => 'Nom',
+			'#type' => 'textfield',
+			'#required' => TRUE
+		);
+
+		$form['consultationCandidature']['Prenom']=array(
+			'#title' => 'Prénom',
+			'#type' => 'textfield',
+			'#required' => TRUE
+		);	
+
+		$form['consultationCandidature']['Email']=array(
+			'#title' => 'Email',
+			'#type' => 'textfield',
+			'#required' => TRUE
+		);	
+
+		$form['consultationCandidature']['valider']=array(
+			'#type' => 'submit',
+			'#value' => t('Afficher'),
+		);
+		return $form;
+	}
+	
+} 
+
+function afficherFormulaireConsultation_submit($form,&$form_state){
+	variable_set('contenuFormConsultation',$form_state["values"]);
+}
+
+
+function resultat_consultation_candidature(){
+	
+	$var_tampon_consultation=variable_get('contenuFormConsultation');
+	variable_del('contenuFormConsultation');
+
+	if($var_tampon_consultation != NULL){
+
+		$candidat = db_select('candidature', 'c')
+				->fields('c')
+				->condition('nom_candidat',$var_tampon_consultation['Nom'],'=')
+				->condition('prenom_candidat',$var_tampon_consultation['Prenom'],'=')
+				->condition('email_candidat',$var_tampon_consultation['Email'],'=')
+				->execute()->fetchall();
+				
+		$etat = "";
+		if($candidat[0]->etat == 1){
+			$etat = 'En cours de traitement.';
+		}elseif($candidat[0]->etat == 2){
+			$etat = 'Accepté.';
+		}else{
+			$etat = 'Refusé.';
+		}
+
+		$retour = "<div class='suiviCandidature'>
+					<span class='labelCandidature'>Nom :</span> ". $candidat[0]->nom_candidat ."</br>
+					<span class='labelCandidature'>Prénom :</span> ". $candidat[0]->prenom_candidat ."</br>
+					<span class='labelCandidature'>Numéro de dossier :</span> ". $candidat[0]->nDossier ."</br></br>
+					<span class='labelCandidature'>Etat du dossier :</span> ". $etat ."</div>";
+		return $retour;
+	}
+}
+?>

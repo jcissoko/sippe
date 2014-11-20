@@ -1,0 +1,10 @@
+/*twitter block*/
+.var-narrow .timeline-header
+{
+	background-color:#446cb3;	
+}
+
+.timeline-header .summary a:link
+{
+	color:#ffffff;
+}

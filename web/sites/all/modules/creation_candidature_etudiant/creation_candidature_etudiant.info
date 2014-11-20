@@ -1,0 +1,6 @@
+name = "Création candidatures étudiants"
+description = "Module permettant la création des candidature étudiantes"
+project = "creation_candidature_etudiant"
+version = "7.x-1.2"
+core = 7.x
+package = Sippenet

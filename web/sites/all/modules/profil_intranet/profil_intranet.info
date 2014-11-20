@@ -1,0 +1,6 @@
+name = "Profil intranet"
+description = "Affiche le profil de l'utilisateur connecté"
+project = "profil_intranet"
+version = "7.x-1.2"
+core = 7.x
+package = Sippenet

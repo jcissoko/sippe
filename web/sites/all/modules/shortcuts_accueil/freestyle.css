@@ -1,0 +1,86 @@
+#shortcuts_global
+{
+	text-align:center;
+}
+
+.block_shortcuts
+{
+	display:inline-block;
+	width:22.5%;
+	height:140px;
+	border: 1px solid #d4d4d4; 
+	text-align:center;
+	background-repeat: no-repeat;
+	background-position: center 25%;
+}
+
+#img_menu_formation
+{
+	background-image: url('Images/picto-formation.png');
+	color:#373737;
+}
+
+#img_menu_metier
+{
+	background-image: url('Images/picto-metiers.png');
+	color:#373737;
+}
+
+#img_menu_asso
+{
+	background-image: url('Images/picto-asso.png');
+	color:#373737;
+}
+
+#img_menu_partenaires
+{
+	background-image: url('Images/picto-partenaires.png');
+	color:#373737;
+}
+
+
+#img_menu_formation:hover
+{
+	background-image: url('Images/picto-formation-hover.png');
+	background-color: #32a8f3;
+	color:#ffffff;
+}
+
+#img_menu_metier:hover
+{
+	background-image: url('Images/picto-metiers-hover.png');
+	background-color: #32a8f3;
+	color:#ffffff;
+}
+
+#img_menu_asso:hover
+{
+	background-image: url('Images/picto-asso-hover.png');
+	background-color: #32a8f3;
+	color:#ffffff;
+}
+
+#img_menu_partenaires:hover
+{
+	background-image: url('Images/picto-partenaires-hover.png');
+	background-color: #32a8f3;
+	color:#ffffff;
+}
+
+.block_metier
+{
+	margin-left:2%;
+	margin-right:2%;
+}
+
+.block_asso
+{
+	margin-right:2%;
+}
+
+.text_shortcuts
+{
+	font-family:"LobsterTwo-Regular";
+	margin-top:95px;
+	font-size: 18px;
+}

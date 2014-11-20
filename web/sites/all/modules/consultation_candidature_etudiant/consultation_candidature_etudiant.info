@@ -1,0 +1,7 @@
+;$Id$
+name = "Consultation candidatures etudiants"
+description = "Module permettant la consultation de l'état de la candidature par l'étudiant."
+project = "consultation_candidature_etudiant_blocs"
+version = "7.x-1.2"
+core = 7.x
+package = Sippenet

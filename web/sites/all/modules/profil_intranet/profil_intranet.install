@@ -1,0 +1,17 @@
+<?php
+
+function profil_intranet_schema() 
+{
+	$schema['users_info'] = array(
+		'fields' => array(
+		  'id'						=> array('type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE),
+		  'nom'						=> array('type' => 'varchar', 'length' => 75),
+		  'prenom'					=> array('type' => 'varchar', 'length' => 75),
+		  'user_id'					=> array('type' => 'numeric', 'not null' => TRUE)
+		),
+		 'primary key' => array(
+			'id'
+		)
+	  );
+	  return $schema;
+ }

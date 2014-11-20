@@ -1,0 +1,7 @@
+## Default .htaccess file
+
+	<FilesMatch "\.(ttf|otf|eot|woff|OTF)$">
+	  <IfModule mod_headers.c>
+		Header set Access-Control-Allow-Origin "*"
+	  </IfModule>
+	</FilesMatch>

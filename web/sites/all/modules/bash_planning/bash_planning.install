@@ -1,0 +1,30 @@
+<?php
+
+function bash_planning_schema() 
+{
+	$schema['events_calendar'] = array(
+		'fields' => array(
+		  'id'							=> array('type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE),
+		  'date'						=> array('type' => 'numeric', 'not null' => TRUE),
+		  'intervenant'					=> array('type' => 'varchar', 'length' => 7, 'not null' => TRUE),
+		  'salle'						=> array('type' => 'varchar', 'length' => 3, 'not null' => TRUE),
+		  'classe'						=> array('type' => 'varchar', 'length' => 2, 'not null' => TRUE),
+		  'classe_couleur'				=> array('type' => 'varchar', 'length' => 20, 'not null' => TRUE)
+		),
+		 'primary key' => array(
+			'id'
+		)
+	  );
+	  $schema['legend_calendar'] = array(
+		'fields' => array(
+		  'id'							=> array('type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE),
+		  'initiales'					=> array('type' => 'varchar', 'length' => 15, 'not null' => TRUE),
+		  'nom'							=> array('type' => 'varchar', 'length' => 100, 'not null' => TRUE)
+		),
+		 'primary key' => array(
+			'id'
+		)
+	  );
+	  return $schema;
+ }
+ 

@@ -1,0 +1,298 @@
+<?php
+
+
+	include("getHolidays.php");
+
+
+	function bash_planning_block_info()
+	{
+		$blocks['bash_planning'] = array(
+			'info' => t('Bash planning'),
+			'cache' => 3,
+		);
+		return $blocks ;
+	}
+	
+	function bash_planning_block_view($delta = '') 
+	{
+		switch($delta)
+		{
+			case 'bash_planning' :
+			$block['subject'] = t('');
+			$block['content'] = bash_planning_view();
+			break ;
+		}
+		return $block ;
+	}
+
+	
+	function bash_planning_init()
+	{
+		
+	}
+	
+		
+	function bash_planning_view() 
+	{	
+		if (user_access('access bash_planning'))
+		{
+			drupal_add_css(drupal_get_path('module', 'bash_planning') . '/js/jquery-ui-1.10.4/themes/base/jquery-ui.min.css');
+			drupal_add_css(drupal_get_path('module', 'bash_planning') . '/gangnamstyle.css');
+			drupal_add_js(drupal_get_path('module', 'bash_planning') . '/js/jquery-1.10.2.min.js');
+			drupal_add_js(drupal_get_path('module', 'bash_planning') . '/js/jquery-ui-1.10.4/ui/jquery-ui.min.js');
+			
+			if (user_access('modify bash_planning')){
+				drupal_add_js(drupal_get_path('module', 'bash_planning') . '/modal_form.js');
+				drupal_add_js(drupal_get_path('module', 'bash_planning') . '/modal_form_jours_multiples.js');
+				drupal_add_js(drupal_get_path('module', 'bash_planning') . '/export_pdf.js');
+				drupal_add_js(drupal_get_path('module', 'bash_planning') . '/legende_form.js');
+			}
+			
+			preg_match("/[^\/]+$/", $_SERVER['REQUEST_URI'], $matches);
+			$promo_planning = $matches[0];
+
+			$jours_francais = array ('L', 'M', 'M', 'J', 'V', 'S', 'D');
+			$mois_francais = array ('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre');
+
+			//on commence par faire l'entête du calendrier avec les mois
+		
+
+			$planning = "<a href='".drupal_get_path('module', 'bash_planning') ."/download_file.php?classe=".$promo_planning."' title='Télécharger en PDF' id='dl_pdf_button' class='control_button'></a>";
+			
+			if (user_access('modify bash_planning')){
+				$planning .= "
+				<a href='#' title='Envoyer par mail' id='mail_button' class='control_button'></a>
+				<a href='#' title='Ajouter une période de cours' id='add_cours_button' class='control_button'></a>";
+			}
+			$annee_en_cours = date('Y');
+			$mois_en_cours = date('M');
+
+			
+			if($mois_en_cours <= 8)
+			{
+				$annee_titre1 = $annee_en_cours - 1;
+				$annee_titre2 = $annee_en_cours;
+			}
+			else
+			{
+				$annee_titre1 = $annee_en_cours;
+				$annee_titre2 = $annee_en_cours + 1;
+			}
+			
+			
+			$planning .= "<div id='div_export'><table CELLPADDING='0' class='table'><tr><td colspan='1'></td><td class='case_annee' colspan='4'>".$annee_titre1."</td><td colspan='8' class='case_annee'>".$annee_titre2."</td></tr>";
+			
+			
+			$planning .= "<tr><td class='case_numero_jour'></td>";
+			for($cpt = 8 ; $cpt < 20 ; $cpt++)
+			{
+				$num_mois = $cpt % 12 + 1;
+
+				$nom_du_mois = $mois_francais[$num_mois - 1];
+				
+				$planning .= "<td class='case_mois'>".$nom_du_mois."</td>";
+			}
+			$planning .= "</tr>";
+			
+				
+			//on trace le tableau ligne par ligne
+			for($cpt_jours_totaux = 1; $cpt_jours_totaux <= 31; $cpt_jours_totaux++)
+			{
+				$planning .= "<tr>";
+				
+				//1ère colonne : le numéro des jours 1 à 31
+				$planning .= "<td class='case_numero_jour'>".$cpt_jours_totaux."</td>";
+			
+				//on trace deux colonnes par mois
+				for($cpt = 8 ; $cpt < 20 ; $cpt++)
+				{	
+					//on repère le mois
+					$num_mois = $cpt % 12 + 1;
+					
+			
+					//si le mois en cours est au début de l'année et qu'on itère sur le début de l'année
+					if($mois_en_cours < 8 && $num_mois <= 8)
+					{
+						$annee = $annee_en_cours;
+					}
+					
+					//si le mois en cours est au début de l'année et qu'on itère sur la fin de l'année
+					else if($mois_en_cours < 8 && $num_mois > 8)
+					{
+						$annee = $annee_en_cours - 1;
+					}
+					
+					
+					//si le mois en cours est à la fin de l'année et qu'on itère sur le début de l'année
+					else if($mois_en_cours >= 8 && $num_mois <= 8)
+					{
+						$annee = $annee_en_cours + 1;
+					}
+					
+					//si le mois en cours est à la fin de l'année et qu'on itère sur la fin de l'année
+					else if($mois_en_cours >= 8 && $num_mois > 8)
+					{
+						$annee = $annee_en_cours;
+					}
+					$holidays = getHolidays($annee);
+			
+					$date = mktime(0, 0, 0, $num_mois, 1, $annee);
+					
+					
+					//on cherche le nombre de jours du mois
+					$nombre_jours_dans_mois = date("t",$date); 
+					
+					
+					//si ce nombre est inférieur ou égal au compteur de jours
+					if($nombre_jours_dans_mois >= $cpt_jours_totaux)
+					{
+						//on prend la date du jour
+						$date_jour_en_cours = mktime(0, 0, 0, $num_mois, $cpt_jours_totaux, $annee);
+						$num_du_jour = date("N",$date_jour_en_cours); 
+						
+						if(in_array($date_jour_en_cours, $holidays))
+						{
+							$planning .= "<td class='case_jour_ferie'><span class='nom_jour'>".$jours_francais[$num_du_jour - 1]."</span>&nbsp;<span class='jour_ferie'>".array_search($date_jour_en_cours, $holidays)."</span></td>";
+						}
+						else
+						{
+							//si c'est un week-end on grise la case
+							if($num_du_jour == 6 || $num_du_jour == 7)
+								$planning .= "<td class='case_week_end'><span class='nom_jour'>".$jours_francais[$num_du_jour - 1]."</span></td>";
+							else
+							{
+								$query = db_select('events_calendar');
+								$query->condition('date', $date_jour_en_cours, '=');
+								$query->condition('classe', $promo_planning, '=');
+								$query->fields('events_calendar', array('date', 'intervenant', 'salle', 'classe_couleur'));
+								
+								$result = $query->execute()->fetchAll();
+								if(count($result) == 1)
+								{						
+									$planning .= "<td id='".$date_jour_en_cours."' class='case_classique ".$result[0]->classe_couleur."'><span class='nom_jour'>".$jours_francais[$num_du_jour - 1]."</span>&nbsp;<span class='cours_jour'>".$result[0]->intervenant."</span>&nbsp;<span class='numero_salle'>".$result[0]->salle."</span></td>";
+								}
+								else
+								{
+									$planning .= "<td id='".$date_jour_en_cours."' class='case_classique white'><span class='nom_jour'>".$jours_francais[$num_du_jour - 1]."</span>&nbsp;<span class='cours_jour'></span>&nbsp;<span class='numero_salle'></span></td>";
+								}
+							}
+						}
+					}
+					else
+						$planning .= "<td class='case_vide'></td>";
+						
+				}
+				$planning .= "</tr>";
+			}	
+			$planning .= '</table>';
+			
+			$planning .= "<table CELLPADDING='0' id='table_legende' class='table'>";
+			$query = db_select('legend_calendar');
+			$query->fields('legend_calendar', array('id', 'initiales', 'nom'));
+			$query->orderBy('initiales', 'ASC');
+			$result = $query->execute()->fetchAll();
+
+			$nbResultatsLegende = count($result);
+			$nbColonnes = 0;
+			$planning .= "<tr ><td class='entete_legende'>Initiales</td><td class='entete_legende'>Nom</td>	<td class='entete_legende'>Initiales</td><td class='entete_legende'>Nom</td>	<td class='entete_legende'>Initiales</td><td class='entete_legende'>Nom</td></tr>";
+			foreach($result as $res)
+			{
+				if(($nbColonnes % 3 ) == 0)		//on débute une nouvelle ligne
+					if($nbColonnes > 0)					
+						$planning .= '</tr>';								//on ferme la ligne précédente
+						if (user_access('modify bash_planning')){
+							$planning .= '<td class="case_initiales_legende">'.$res->initiales.'</td>	<td class="case_nom_legende"> '.$res->nom.'<span id='.$res->id.' class="ui-icon ui-icon-closethick icon-delete-right"></span></td>';									//on ouvre une nouvelle ligne
+						}
+						else
+						{
+							$planning .= '<td class="case_initiales_legende">'.$res->initiales.'</td>	<td class="case_nom_legende"> '.$res->nom.'<span id='.$res->id.'></span></td>';
+						}
+				$nbColonnes++;
+			}
+			//on ferme la ligne et le tableau et la div "div_export"
+			$planning .=  "</tr></table></div>";
+			
+			
+			if (user_access('modify bash_planning')){
+				$planning .='
+					<form id="form_legende">
+						<fieldset>
+							<legend>Ajouter un élément à la légende :</legend>
+							<div id="content_form_legende">
+								<label for="initiales_elem">Initiales :</label>
+								<input type="text" name="initiales_elem" id="initiales_elem" class="text ui-widget-content ui-corner-all">
+								<label for="nom_elem" >Nom complet :</label>
+								<input type="text" name="nom_elem" id="nom_elem" class="text ui-widget-content ui-corner-all">
+								<a href="#" id="add_legende" title="Ajouter la légende"></a>
+							</div>
+						</fieldset>
+					</form>';
+				
+				$planning .='
+				<div id="dialog-form">
+				  <form class="event_form">
+					<label for="name">Intervenant/Activité :</label>
+					<input type="text" name="name" id="name" maxlength="7" class="text ui-widget-content ui-corner-all"><br/>
+					<label for="salle" >Salle :</label>
+					<input type="text" maxlength="3" name="salle" id="salle" class="text ui-widget-content ui-corner-all">
+					<label for="color">Couleur : </label>
+					<select name="color" id="color">
+						<option value="light_blue">Turquoise</option>
+						<option value="blue">Bleu</option>
+						<option value="grey">Gris</option>
+						<option value="salmon">Saumon</option>
+						<option value="white">Blanc</option>
+					</select>
+				  </form>
+				</div>';
+				
+				
+				$planning .='
+				<div id="dialog-form-jours-multiples" title="Ajout d\'une période">
+				<p class="validateTips">Tous les champs doivent être remplis</p>
+				<form class="event_form">
+					<label for="periode_name">Intervenant/Activité :</label>
+					<input type="text" name="periode_name" id="periode_name" maxlength="7" class="text ui-widget-content ui-corner-all"><br/>
+					<label for="periode_salle" >Salle :</label>
+					<input type="text" maxlength="3" name="periode_salle" id="periode_salle" class="text ui-widget-content ui-corner-all">
+					<label for="periode_date_debut_datepicker" >Date de début :</label>
+					<input type="text" name="periode_date_debut_datepicker" id="periode_date_debut_datepicker" class="text ui-widget-content ui-corner-all">
+					<label for="periode_date_fin_datepicker" >Date de fin :</label>
+					<input type="text" name="periode_date_fin_datepicker" id="periode_date_fin_datepicker" class="text ui-widget-content ui-corner-all">
+
+					<label for="periode_color">Couleur : </label>
+					<select name="periode_color" id="periode_color">
+						<option value="white">Blanc</option>
+						<option value="light_blue">Turquoise</option>
+						<option value="blue">Bleu</option>
+						<option value="grey">Gris</option>
+						<option value="salmon">Saumon</option>
+					</select>
+				</form>
+				</div>
+				<div class="modal"></div>';
+			}
+		}
+		else
+		{
+			$planning = "Vous n'êtes pas autorisé(e) à accéder à cette page.";
+		}
+		return $planning;
+	}
+	
+	function bash_planning_permission() 
+	{
+		$arr = array();
+		$arr['access bash_planning'] = array(
+		'title' => t('Accès planning')
+		);
+
+		$arr['modify bash_planning'] = array(
+		'title' => t('Modification planning')
+		);
+
+		return $arr;
+	}
+
+	
+?>

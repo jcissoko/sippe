@@ -1,0 +1,215 @@
+<?php
+
+
+	function profil_intranet_block_info()
+	{
+		$blocks['profil_intranet'] = array(
+			'info' => t('Intranet profil'),
+			'cache' => 3,
+		);
+		return $blocks ;
+	}
+	
+	function profil_intranet_permission() 
+	{
+		return array('access profil_intranet' => array( 'title' => t('Accès profil')));
+	}
+	
+	function profil_intranet_block_view($delta = '') 
+	{	
+		switch($delta)
+		{
+			case 'profil_intranet' :
+			$block['subject'] = t('');
+			$block['content'] = profil_intranet_view();
+			break ;
+		}
+		return $block ;
+	}
+
+	function profil_intranet_view() 
+	{	
+		require './includes/password.inc';
+	
+		$display = "";
+		
+		$dossierUpload = "sites/default/files/styles/thumbnail/public/pictures";
+		
+		if(user_access('access profil_intranet'))
+		{
+			drupal_add_css(drupal_get_path('module', 'profil_intranet') . '/prise_de_la_bastyle.css');
+		
+			$utilisateur = $GLOBALS['user'];
+		
+			$user_role = next($utilisateur->roles);
+
+			
+			if(isset($_FILES['avatar_input']))
+			{
+				$fichier = basename($_FILES['avatar_input']['name']);
+				$taille_maxi = 1000000;
+				$taille = filesize($_FILES['avatar_input']['tmp_name']);
+				$file_type = mime_content_type($_FILES['avatar_input']['tmp_name']);
+				$extensions = array('.png', '.gif', '.jpg', '.jpeg');
+				$extension = strrchr($_FILES['avatar_input']['name'], '.'); 
+				//Début des vérifications de sécurité...
+				if(!in_array($extension, $extensions)) //Si l'extension n'est pas dans le tableau
+				{
+					 $erreur = 'Vous devez uploader un fichier de type png, gif, jpg, jpeg, txt ou doc...';
+				}
+				if($taille>$taille_maxi)
+				{
+					 $erreur = 'Le fichier est trop gros...';
+				}
+				if(!isset($erreur)) //S'il n'y a pas d'erreur, on upload
+				{
+					//On formate le nom du fichier ici...
+					$fichier = 'img_avatar_user-'.$utilisateur->uid.$extension;
+					
+					if(move_uploaded_file($_FILES['avatar_input']['tmp_name'], $dossierUpload ."/". $fichier)) //Si la fonction renvoie TRUE, c'est que ça a fonctionné...
+					{
+						$query_img = db_select('users','u');
+						$query_img->condition('u.uid', $utilisateur->uid, '=');
+						$query_img->fields('f',array('filename','fid'));
+						$query_img->join('file_managed','f','f.fid = u.picture');
+						$result_img = $query_img->execute();
+						$record_img = $result_img->fetchAssoc();
+						
+						//s'il y a déjà un avatar on le met à jour
+						if($record_img)
+						{
+							$id_avatar = $record_img['fid'];
+						
+							$query_update = db_update('file_managed');
+							$query_update->fields(array('filename'=>$fichier));
+							$query_update->condition('fid', $id_avatar, '=');
+							$query_update->execute();
+							
+						}
+						else
+						{
+							$query_insert = db_insert('file_managed');
+							$query_insert->fields(array('filename'=>$fichier, 'uid'=>$utilisateur->uid, 'filesize'=>$taille, 'status'=>'1', 'filemime'=>$file_type));
+							$id_avatar = $query_insert->execute();		
+						}							
+						
+						$query_update = db_update('users');
+						$query_update->fields(array('picture'=>$id_avatar));
+						$query_update->condition('uid', $utilisateur->uid, '=');
+						$query_update->execute();
+					}
+					else //Sinon (la fonction renvoie FALSE).
+					{
+						
+					}
+				}
+			}
+			
+			if(!empty($_POST['mdp_actuel']) && !empty($_POST['mdp_new_1']) && !empty($_POST['mdp_new_2']))
+			{
+				$query_user = db_select('users','u');
+				$query_user->condition('u.uid', $utilisateur->uid, '=');
+				$query_user->fields('u', array('pass'));
+				$result_user = $query_user->execute();
+				$record_user = $result_user->fetchAssoc();
+			
+				if($record_user)
+				{
+					$mdpBdd = $record_user['pass'];
+					$mdpPostAncien = $_POST['mdp_actuel'];
+					
+					$account->pass = $mdpBdd;
+												
+					if(user_check_password($mdpPostAncien, $account))
+					{
+						$mdpPostNew = $_POST['mdp_new_1'];
+						$mdpPostNew2 = $_POST['mdp_new_2'];
+					
+						if($mdpPostNew == $mdpPostNew2)
+						{
+							echo 'mdp_new_okay';
+							
+							$query_update_pwd = db_update('users');
+							$query_update_pwd->fields(array('pass'=>user_hash_password($mdpPostNew)));
+							$query_update_pwd->condition('uid', $utilisateur->uid, '=');
+							$query_update_pwd->execute();
+						}
+					}
+					else
+					{
+						//message d'erreur
+					}
+					exit;
+				}
+			}
+			
+			
+			$query = db_select('users','u');
+			$query->condition('u.uid', $utilisateur->uid, '=');
+			$query->fields('f',array('filename'));
+			$query->join('file_managed','f','f.fid = u.picture');
+			$result = $query->execute();
+			$record = $result->fetchAssoc();
+			
+			if(!$record)
+				$path = $dossierUpload."/Avatar_defaut.png";
+			else
+				$path = $dossierUpload."/".$record['filename'];
+				
+				
+			$queryInfos = db_select('users_info','infos');
+			$queryInfos->condition('infos.user_id', $utilisateur->uid, '=');
+			$queryInfos->fields('infos',array('nom','prenom'));
+			$resultInfos = $queryInfos->execute();
+			$recordInfos = $resultInfos->fetchAssoc();
+			
+			if(!$recordInfos)
+			{
+				$nom = $utilisateur->name;
+				$prenom = $utilisateur->name;
+			}
+			else
+			{
+				$nom = $recordInfos['nom'];
+				$prenom = $recordInfos['prenom'];
+			}
+			
+		
+			$display .= "<h1 class='titre'>Profil</h2>";
+			$display .= "<h2>Mes informations</h2>";
+			$display .= "<div id='div_avatar'><img src='".$path."' id='avatar' alt='avatar'/></div>";
+			
+			$display .= "<div id='div_info'>";
+			
+				$display .= "<label class='info_label_gras'>Pseudo : </label><label class='info_label'>".$utilisateur->name."</label><br/>";
+				$display .= "<label class='info_label_gras'>Nom : </label><label class='info_label'>".$nom."</label><br/>";
+				$display .= "<label class='info_label_gras'>Prénom : </label><label class='info_label'>".$prenom."</label><br/>";
+				$display .= "<label class='info_label_gras'>Adresse mail : </label><label class='info_label'>".$utilisateur->mail."</label><br/>";
+				$display .= "<label class='info_label_gras'>Statut : </label><label class='info_label'>".$user_role."</label><br/>";
+
+			$display .= "</div>";
+			
+			
+			$display .= "<form method='POST' enctype='multipart/form-data' action=''>";
+			
+				$display .= "<label id='label_avatar'>Avatar : </label><input type='file' id='avatar_input' name='avatar_input'/>";
+		
+				$display .= "<h2>Modifier le mot de passe</h2>";
+				$display .= "<label>Mot de passe actuel : </label>";
+				$display .= "<input class='champ' name='mdp_actuel' type='password'/>";
+				$display .= "<label>Nouveau mot de passe : </label>";
+				$display .= "<input class='champ' name='mdp_new_1' type='password'/>";
+				$display .= "<label>Confirmer le nouveau mot de passe : </label>";
+				$display .= "<input class='champ' name='mdp_new_2' type='password'/>";
+
+				$display .= "<input id='button_validate' type='submit' value='Enregistrer'/>";
+			$display .= "</form>";
+		}
+		else
+		{
+			$display .= "Vous n'êtes pas autorisé(e) à accéder à cette page.";
+		}
+		
+		return $display;
+	}
+	

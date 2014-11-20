@@ -1,0 +1,152 @@
+.img_news
+{
+	display:inline-block;
+	border: 1px solid #c7b89e;
+	margin-right:10px;
+}
+
+.img_news,.img_news img{
+   width: 70px;
+   height: 70px;
+   -webkit-border-radius: 50px; /* Saf3+, Chrome */
+   border-radius: 50px; /* Opera 10.5, IE 9 */
+   /*-moz-border-radius: 30px;  Disabled for FF1+ */
+}
+	   
+
+.content_news
+{
+	width:88%;
+	display:inline-block;
+}
+
+.first_line_news
+{
+	width:100%;
+	height:20px;
+}
+
+.titre_news
+{
+	float:left;
+	font-size:15px;
+	font-family:"MyriadPro";
+	color:#373737;
+	font-weight:bold;
+}
+
+.date_news
+{
+	float:right;
+	color:#32a8f3;
+	font-style:italic;
+	font-size:13px;
+}
+
+.first_line_news .buttons_admin
+{
+	float:right;
+	color:#fdda12;
+	font-style:italic;
+	display:inline-block;
+	padding:0px;
+	margin-left:40px;
+}
+
+.first_line_news .buttons_admin img
+{
+	padding-left:5px;
+}
+
+.body_news
+{
+	margin-top:5px;
+	height:30px;
+	margin-bottom:5px;
+	line-height:18px;
+}
+
+.one_news
+{
+	width:100%;
+	margin-bottom:25px;
+}
+
+.lien_news
+{
+	padding-top: 15px;
+	font-style:italic;
+}
+
+.pager_news
+{
+	text-align:center;
+}
+
+.pager_news a
+{
+	font-size:16px;
+	color:#446cb3;
+	width:25px;
+	height:25px;
+	display:inline-block;
+	line-height:25px;
+	vertical-align:middle;
+	font-family:Arial;
+}
+
+.pager_news a:hover
+{
+	text-decoration:underline;
+}
+
+.pager_news a.active
+{
+	font-size:16px;
+	color:#ffffff;
+	background-image: url('/sites/all/modules/display_news/Images/Cercle.png');
+}
+
+a#ajout_news
+{
+	width:40px;
+	height:21px;
+	margin-left:20px;
+	display:inline-block;
+	background-image: url('/sites/all/modules/display_news/Images/picto-ajouter.png');
+}
+
+a:hover#ajout_news
+{
+	background-image: url('/sites/all/modules/display_news/Images/picto-ajouter-hover.png');
+}
+
+
+a#edit_news
+{
+	width:20px;
+	height:18px;
+
+	display:inline-block;
+	background-image: url('/sites/all/modules/display_news/Images/picto-editer.png');
+}
+
+a:hover#edit_news
+{
+	background-image: url('/sites/all/modules/display_news/Images/picto-editer-hover.png');
+}
+
+
+a#supp_news
+{
+	width:20px;
+	height:18px;
+	margin-left:5px;
+	display:inline-block;
+	background-image: url('/sites/all/modules/display_news/Images/picto-supprimer.png');
+}
+
+a:hover#supp_news
+{
+	background-image: url('/sites/all/modules/display_news/Images/picto-supprimer-hover.png');
+}

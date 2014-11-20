@@ -1,0 +1,6 @@
+name = "Planning by Bash"
+description = "Un module de planning, un vrai !"
+project = "planning_blocs"
+version = "7.x-1.2"
+core = 7.x
+package = Sippenet
