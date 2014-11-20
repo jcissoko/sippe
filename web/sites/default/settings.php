@@ -215,7 +215,7 @@ $databases = array (
   array (
     'default' => 
     array (
-      'database' => 'c0sippenet',
+      'database' => 'sippe',
       'username' => 'root',
       'password' => '',
       'host' => 'localhost',
@@ -256,7 +256,7 @@ $update_free_access = FALSE;
  *   $drupal_hash_salt = file_get_contents('/home/example/salt.txt');
  *
  */
-$drupal_hash_salt = '9NrilEeSxIAGs7w3FqmnsJcyOlpGZTHAtGpS-cyLI2I';
+$drupal_hash_salt = 'En1SAAAIncvcmzNKcVmuO_d6Io3k85oKaD3YqaXSwwg';
 
 /**
  * Base URL (optional).
