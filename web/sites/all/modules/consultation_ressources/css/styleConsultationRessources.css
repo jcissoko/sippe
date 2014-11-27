@@ -1,0 +1,64 @@
+.boutonDL{
+	display: block;
+	width: 32px;
+	height: 32px;
+	margin:auto;
+}
+
+.dlRapport{
+	background-image: url("../images/dl_rapport.png");
+}
+
+.dlRapport:hover{
+	background-image: url("../images/dl_rapport-h.png");
+}
+
+.tableauCandidats{
+	border : none;
+	text-align: center;
+}
+
+.tableauCandidats tr th{
+
+	background-color: #078ee0;
+	color : white;
+	text-shadow : none;
+	border : none;
+}
+
+.tableauCandidats tr td{
+
+	background-color: white;
+	color : black;
+	border : none;
+
+}
+
+.pager_news
+{
+	text-align:center;
+}
+
+.pager_news a
+{
+	font-size:16px;
+	color:#446cb3;
+	width:25px;
+	height:25px;
+	display:inline-block;
+	line-height:25px;
+	vertical-align:middle;
+	font-family:Arial;
+}
+
+.pager_news a:hover
+{
+	text-decoration:underline;
+}
+
+.pager_news a.active
+{
+	font-size:16px;
+	color:#ffffff;
+	background-image: url('../images/Cercle.png');
+}

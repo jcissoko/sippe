@@ -1,0 +1,193 @@
+<?php
+/**
+* Implementation of consultation_ressources().
+*/
+function consultation_ressources_block_info(){
+	$blocks = array(); 
+	$blocks['consultation_ressources'] = array(
+		'info' => t("Consultation des ressources."),
+		'cache' => DRUPAL_NO_CACHE,
+		);
+	return $blocks;
+}
+
+function consultation_ressources_block_view($block_name=''){
+	
+	$block = array();
+
+	switch ($block_name) {
+		case 'consultation_ressources':
+			$block['subject'] = t('Consulter les ressources');
+			$block['content'] = consultation_ressources_listing();
+			break;
+	}
+
+	return $block;
+}
+
+
+function consultation_ressources_permission() {
+  return array('access consultation_ressources' => array('title' => t('Accès Consultation des ressources')));
+}
+
+
+
+function consultation_ressources_init(){
+
+}
+
+function consultation_ressources_listing(){
+
+	drupal_add_css(drupal_get_path('module', 'consultation_ressources') . '/css/styleConsultationRessources.css');
+
+	if(user_access('access consultation_ressources')){
+
+		$page=1;
+		$nbRapportParPage = 15;
+
+		if(!empty($_GET['page']))
+		{
+			$page = $_GET['page'];
+			if($page>1)
+				$num_first_rapport = ($page * $nbRapportParPage - $nbRapportParPage)*6;
+			else
+				$num_first_rapport = $page * $nbRapportParPage - $nbRapportParPage;
+
+		}else{
+			$num_first_rapport = $page * $nbRapportParPage - $nbRapportParPage;
+		}
+
+		$nbrEnreg = db_select('webform_submitted_data', 'wsd')
+						->distinct()
+						->fields('wsd', array('sid'))
+						->condition('nid', 63,'=')
+						->execute()->rowCount();
+
+		//Condition OR pour la requête qui suit
+		$or = db_or()
+				->condition('cid', 16,'=')
+				->condition('cid', 14,'=')
+				->condition('cid', 12,'=')
+				->condition('cid', 2,'=')
+				->condition('cid', 15,'=')
+				->condition('cid', 19,'=');
+
+
+		// NID 37 correspond au formulaire des dépôts de rapports de stage.
+		$lesdatas = db_select('webform_submitted_data', 'wsd')
+						->fields('wsd', array('sid', 'cid', 'data'))
+						->condition('nid', 63,'=')
+						->condition($or)
+						->orderBy('sid', 'ASC')
+						->range($num_first_rapport, $nbRapportParPage * 6)
+						->execute();
+
+						
+		$lesDonnees = array();
+		while($ligneDonnees = $lesdatas->fetchAssoc() ){
+
+
+			$nomCID = db_select('webform_component', 'wf')
+				->fields('wf',array('name'))
+				->condition('nid', 63, '=')
+				->condition('cid', $ligneDonnees['cid'], '=')
+				->execute()->fetchAssoc();
+
+
+			$lesDonnees[$ligneDonnees['sid']][$nomCID['name']] = $ligneDonnees['data'];
+
+			//On chercher si le composant du formulaire est un type file pour ensuite trouver le chemin du fichier.
+			$leCID = db_select('webform_component', 'wf')
+			->fields('wf',array('cid'))
+			->condition('type', 'file','=')
+			->condition('nid', 63, '=')
+			->condition('cid', $ligneDonnees['cid'], '=')
+			->execute()->fetchAssoc();
+
+			// Si leCID est un array non nul c'est que la requête a fonctionné donc on se trouve face à un type de form file. 
+			if(is_array($leCID) && count($leCID) > 0){
+
+				$cheminFichier = db_select('file_managed', 'fm')
+					->fields('fm',array('filename'))
+					->condition('fid', $ligneDonnees['data'],'=')
+					->execute()->fetchAssoc();
+
+				$nom = explode('.', $cheminFichier['filename']);
+
+				$lesDonnees[$ligneDonnees['sid']][$nomCID['name']] = $nom[0];
+			}
+		}
+
+		$tableauHTML = '<table class="tableauCandidats"><tr>';
+		
+		if(is_array($lesDonnees) && count($lesDonnees) > 0){
+
+			$entetes = array_keys(current($lesDonnees));
+			foreach($entetes as $entete)
+			{
+				$tableauHTML .= "<th>$entete</th>";
+			}
+			$tableauHTML .= '</tr>';
+			foreach ($lesDonnees as $value) {
+
+				$tableauHTML .= "<tr>";
+				foreach ($value as $key=>$element) {
+					if($key == "Durée"){
+						$tableauHTML .= "<td>" . $element . " mois</td>";
+					}elseif ($key == "Fichier de l'offre de stage (PDF)") {
+
+						$tableauHTML .= "<td><a class='boutonDL dlRapport' href='" . drupal_get_path('module', 'consultation_ressources') . "/dl_rapport.php?file=". $element."'></td>";
+						
+					}else{
+						$tableauHTML .= "<td>" . $element . "</td>";
+					}
+					
+				}
+				$tableauHTML .= "</tr>";
+			}
+			$tableauHTML .= "</table>";
+
+			$tableauHTML .= '<div class="pager_news">';
+
+			if($page > 1)
+			{
+				$page_precedente = $page - 1;
+				$tableauHTML .= '<a href="Intranet/ConsultationOffreStage&page='.$page_precedente.'">&lsaquo;</a> ';
+			}
+			
+
+			$pageFinale = ceil($nbrEnreg / $nbRapportParPage);
+			
+			for($cpt = 1 ; $cpt <= $pageFinale ; $cpt++)
+			{
+				if($cpt == $page)
+				{
+					$tableauHTML .= '<a class="active" href="Intranet/ConsultationOffreStage&page='.$cpt.'">'.$cpt.'</a>';
+				}
+				else
+					$tableauHTML .= '<a href="Intranet/ConsultationOffreStage&page='.$cpt.'">'.$cpt.'</a>';	
+			}
+			
+			
+			if($page < $pageFinale)
+			{
+				$page_suivante = $page + 1;
+				$tableauHTML .= '<a href="Intranet/ConsultationOffreStage&page='.$page_suivante.'">&rsaquo;</a>';
+			}
+				
+					
+			$tableauHTML .= '</div>';
+
+			return $tableauHTML;
+
+		}else{
+			return "Aucune offre n'est actuellement disponible.";
+		}
+	}
+	else{
+		return "Vous n'êtes pas autorisé à accéder à cette page.";
+	}
+
+}
+
+?>
