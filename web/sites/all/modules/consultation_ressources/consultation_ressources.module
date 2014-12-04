@@ -35,17 +35,138 @@ function consultation_ressources_init(){
 
 function consultation_ressources_listing(){
 	drupal_add_css(drupal_get_path('module', 'consultation_ressources') . '/css/styleConsultationRessources.css');
-	if(user_access('access consultation_rapport_de_stage')){
-		$tableauHTML = '<table>
-							<tr><th>nom</th></tr>
-							<tr><td>test</td></tr>
-						</table>';
-		return $tableauHTML;
-	}
-	else{
-		return "Vous n'êtes pas autorisé à accéder à cette page.";
-		
+		if(user_access('access consultation_rapport_de_stage')){
+			$page=1;
+			$nbRessourcesParPage = 15;
+
+
+			if(!empty($_GET['page']))
+			{
+				$page = $_GET['page'];
+				if($page>1)
+					$num_first_rapport = ($page * $nbRessourcesParPage - $nbRessourcesParPage)*6;
+				else
+					$num_first_rapport = $page * $nbRessourcesParPage - $nbRessourcesParPage;
+			}else{
+				$num_first_rapport = $page * $nbRessourcesParPage - $nbRessourcesParPage;
+			}
+			$nbrEnreg = db_select('webform_submitted_data', 'wsd')
+							->distinct()
+							->fields('wsd', array('sid'))
+							->condition('nid', 34,'=')
+							->execute()->rowCount();
+							
+			// NID 34 correspond au formulaire des dépôts de cours.
+			$lesdatas = db_select('webform_submitted_data', 'wsd')
+							->fields('wsd', array('sid', 'cid', 'data'))
+							->condition('nid', 34,'=')
+							->range($num_first_rapport, $nbRessourcesParPage * 6)
+							->execute();
+			
+			$lesDonnees = array();
+			while($ligneDonnees = $lesdatas->fetchAssoc() ){
+
+
+				$nomCID = db_select('webform_component', 'wf')
+					->fields('wf',array('name'))
+					->condition('nid', 34, '=')
+					->condition('cid', $ligneDonnees['cid'], '=')
+					->execute()->fetchAssoc();	
+			
+				$lesDonnees[$ligneDonnees['sid']][$nomCID['name']] = $ligneDonnees['data'];
+
+				//On chercher si le composant du formulaire est un type file pour ensuite trouver le chemin du fichier.
+				$leCID = db_select('webform_component', 'wf')
+				->fields('wf',array('cid'))
+				->condition('type', 'file','=')
+				->condition('nid', 34, '=')
+				->condition('cid', $ligneDonnees['cid'], '=')
+				->execute()->fetchAssoc();	
+
+				// Si leCID est un array non nul c'est que la requête a fonctionné donc on se trouve face à un type de form file. 
+				if(is_array($leCID) && count($leCID) > 0){
+
+					$cheminFichier = db_select('file_managed', 'fm')
+						->fields('fm',array('filename'))
+						->condition('fid', $ligneDonnees['data'],'=')
+						->execute()->fetchAssoc();
+
+					$nom = explode('.', $cheminFichier['filename']);
+
+					$lesDonnees[$ligneDonnees['sid']][$nomCID['name']] = $nom[0];
+				}
+			}
+
+			if(is_array($lesDonnees) && count($lesDonnees) > 0){
+
+
+				$tableauHTML = '<table class="tableauCandidats"><tr>';
+
+				$entetes = array_keys(current($lesDonnees));	
+
+					foreach($entetes as $entete)
+					{
+						$tableauHTML .= "<th>$entete</th>";
+					}		
+			
+				$tableauHTML .= '</tr>';
+				foreach ($lesDonnees as $value) {
+
+					$tableauHTML .= "<tr>";
+					foreach ($value as $key=>$element) {
+						if($key == "Durée"){
+							$tableauHTML .= "<td>" . $element . " mois</td>";
+						}elseif ($key == "Ressource") {
+
+							
+							$tableauHTML .= "<td><a class='boutonDL dlRapport' href='" . drupal_get_path('module', 'consultation_ressources') . "/dl_cours.php?file=". $element."'></td>";
+						}else{
+							$tableauHTML .= "<td>" . $element . "</td>";
+						}
+						
+					}
+					$tableauHTML .= "</tr>";
+				}
+				$tableauHTML .= "</table>";
+				
+				$tableauHTML .= '<div class="pager_news">';
+
+				//<img src='". drupal_get_path('module', 'consultation_rapport_de_stage') . "/images/dl_cours.png' class='dlRapportHover' alt='Télécharger rapport'/> ". "
+				if($page > 1)
+				{
+					$page_precedente = $page - 1;
+					$tableauHTML .= '<a href="Intranet/ConsultationRessources&page='.$page_precedente.'">&lsaquo;</a> ';
+				}
+				
+				$pageFinale = ceil($nbrEnreg / $nbRessourcesParPage);
+				
+				for($cpt = 1 ; $cpt <= $pageFinale ; $cpt++)
+				{
+					if($cpt == $page)
+					{
+						$tableauHTML .= '<a class="active" href="Intranet/ConsultationRessources&page='.$cpt.'">'.$cpt.'</a>';
+					}
+					else
+						$tableauHTML .= '<a href="Intranet/ConsultationRapportStage&page='.$cpt.'">'.$cpt.'</a>';	
+				}
+				
+				
+				if($page < $pageFinale)
+				{
+					$page_suivante = $page + 1;
+					$tableauHTML .= '<a href="Intranet/ConsultationRessources&page='.$page_suivante.'">&rsaquo;</a>';
+				}
+					
+						
+				$tableauHTML .= '</div>';
+
+				return $tableauHTML;
+							
+			
+		}
+		else{
+			return "Vous n'êtes pas autorisé à accéder à cette page.";
+			
+		}
 	}
 }
-
-?>
