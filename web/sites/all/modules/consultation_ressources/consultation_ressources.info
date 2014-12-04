@@ -1,7 +1,8 @@
-;$Id$
+; $Id:
 name = "Consultation des ressources"
 description = "Module permettant la consultation des ressources déposées sur le serveur."
 project = "consultation_ressources"
 version = "7.x-1.2"
 core = 7.x
 package = Sippenet
+files[] = consultation_ressources.module
