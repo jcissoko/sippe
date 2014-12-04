@@ -140,9 +140,13 @@ function consultation_rapport_de_stage_listing(){
 				}
 				$tableauHTML .= "</tr>";
 			}
+		   
+			$tableauHTML .= "<tr><td><a  href='/SIPPENET/web/?q=node/37'>Déposer un rapport de stage</a></td></tr>"; 
+			
 			$tableauHTML .= "</table>";
 			
 			$tableauHTML .= '<div class="pager_news">';
+  
 
 			//<img src='". drupal_get_path('module', 'consultation_rapport_de_stage') . "/images/dl_rapport.png' class='dlRapportHover' alt='Télécharger rapport'/> ". "
 			if($page > 1)
@@ -183,5 +187,4 @@ function consultation_rapport_de_stage_listing(){
 	}
 
 }
-
-?>
+	
