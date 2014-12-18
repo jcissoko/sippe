@@ -590,17 +590,23 @@ function _block_manager_copy_block_db($theme = NULL, $region = NULL) {
       if ($page == '<front>') {
         $url = '<front>';
       }
-      else {
+      else if (menu_get_item($page)) { // The given path is already valid.
+        $url = $page;
+      }
+      else { // Generate the system path from the given alias, if possible.
         $url = drupal_lookup_path('source', $page);
       }
-      $values = array(
-        'bid' => $block->bid,
-        'url' => $url,
-        'region' => $region,
-        'weight' => $block->weight,
-        'theme' => $theme,
-      );
-      $rows[] = $values;
+
+      if ($url) {
+        $values = array(
+          'bid' => $block->bid,
+          'url' => $url,
+          'region' => $region,
+          'weight' => $block->weight,
+          'theme' => $theme,
+        );
+        $rows[] = $values;
+      }
     }
   }
 

@@ -5,9 +5,9 @@ core = 7.x
 dependencies[] = block
 configure = admin/config/user-interface/block-manager
 
-; Information added by drupal.org packaging script on 2013-08-02
-version = "7.x-1.2"
+; Information added by Drupal.org packaging script on 2014-01-29
+version = "7.x-1.3"
 core = "7.x"
 project = "block_manager"
-datestamp = "1375415168"
+datestamp = "1390962506"
 

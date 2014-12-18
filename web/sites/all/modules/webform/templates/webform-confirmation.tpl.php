@@ -20,10 +20,10 @@
   <?php if ($confirmation_message): ?>
     <?php print $confirmation_message ?>
   <?php else: ?>
-    <p><?php print t('Merci, votre message a été envoyé.'); ?></p>
+    <p><?php print t('Thank you, your submission has been received.'); ?></p>
   <?php endif; ?>
 </div>
 
 <div class="links">
-  <a href="<?php print url('node/'. $node->nid) ?>"><?php print t('Retour au formulaire') ?></a>
+  <a href="<?php print url('node/'. $node->nid) ?>"><?php print t('Go back to the form') ?></a>
 </div>

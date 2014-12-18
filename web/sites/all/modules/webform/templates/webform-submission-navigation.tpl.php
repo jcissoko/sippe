@@ -17,14 +17,14 @@
 ?>
 <div class="webform-submission-navigation">
   <?php if ($previous): ?>
-    <?php print l(t('Soumission précédente'), $previous_url, array('attributes' => array('class' => array('webform-submission-previous')), 'query' => ($mode == 'form' ? array('destination' => $previous_url) : NULL))); ?>
+    <?php print l(t('Previous submission'), $previous_url, array('attributes' => array('class' => array('webform-submission-previous')), 'query' => ($mode == 'form' ? array('destination' => $previous_url) : NULL))); ?>
   <?php else: ?>
-    <span class="webform-submission-previous"><?php print t('Soumission précédente'); ?></span>
+    <span class="webform-submission-previous"><?php print t('Previous submission'); ?></span>
   <?php endif; ?>
 
   <?php if ($next): ?>
-    <?php print l(t('Soumission suivante'), $next_url, array('attributes' => array('class' => array('webform-submission-next')), 'query' => ($mode == 'form' ? array('destination' => $next_url) : NULL))); ?>
+    <?php print l(t('Next submission'), $next_url, array('attributes' => array('class' => array('webform-submission-next')), 'query' => ($mode == 'form' ? array('destination' => $next_url) : NULL))); ?>
   <?php else: ?>
-    <span class="webform-submission-next"><?php print t('Soumission suivante'); ?></span>
+    <span class="webform-submission-next"><?php print t('Next submission'); ?></span>
   <?php endif; ?>
 </div>

@@ -19,18 +19,18 @@
  * when using the "default" e-mail template.
  */
 ?>
-<?php print ($email['html'] ? '<p>' : '') . t('Envoyé le %date'). ($email['html'] ? '</p>' : ''); ?>
+<?php print ($email['html'] ? '<p>' : '') . t('Submitted on %date'). ($email['html'] ? '</p>' : ''); ?>
 
 <?php if ($user->uid): ?>
-<?php print ($email['html'] ? '<p>' : '') . t('Envoyé par l\'utilisateur: %username') . ($email['html'] ? '</p>' : ''); ?>
+<?php print ($email['html'] ? '<p>' : '') . t('Submitted by user: %username') . ($email['html'] ? '</p>' : ''); ?>
 <?php else: ?>
-<?php print ($email['html'] ? '<p>' : '') . t('Envoyé par l\'utilisateur anonyme: [%ip_address]') . ($email['html'] ? '</p>' : ''); ?>
+<?php print ($email['html'] ? '<p>' : '') . t('Submitted by anonymous user: [%ip_address]') . ($email['html'] ? '</p>' : ''); ?>
 <?php endif; ?>
 
-<?php print ($email['html'] ? '<p>' : '') . t('Les valeurs envoyées sont ') . ':' . ($email['html'] ? '</p>' : ''); ?>
+<?php print ($email['html'] ? '<p>' : '') . t('Submitted values are') . ':' . ($email['html'] ? '</p>' : ''); ?>
 
 %email_values
 
-<?php print ($email['html'] ? '<p>' : '') . t('Le résultat de la soumission peut être consulté sur :') . ($email['html'] ? '</p>' : '') ?>
+<?php print ($email['html'] ? '<p>' : '') . t('The results of this submission may be viewed at:') . ($email['html'] ? '</p>' : '') ?>
 
 <?php print ($email['html'] ? '<p>' : ''); ?>%submission_url<?php print ($email['html'] ? '</p>' : ''); ?>

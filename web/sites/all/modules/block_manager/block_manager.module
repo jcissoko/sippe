@@ -121,12 +121,20 @@ function block_manager_page_alter(&$page) {
   // This is done to avoid re-rendering blocks that have already been processed.
   $blocks_array = array();
 
+  if (module_exists('context')) {
+    $context_reaction = context_get_plugin('reaction', 'block');
+  }
+
   foreach ($managed_regions as $region) {
     // In existing regions, remove the blocks (collect them in $blocks_array for
     // later use, if need be).
     if (array_key_exists($region, $page)) {
       foreach ($page[$region] as $key => $block) {
         if ($key{0} !== '#') {
+          // Make sure that the #block key exists before we try to access it.
+          if (!array_key_exists('#block', $block)) {
+            continue;
+          }
           // System blocks need to be put into our array so that they are placed
           // back into the region at the end.
           if (strpos($key, 'system_') === 0) {
@@ -140,6 +148,17 @@ function block_manager_page_alter(&$page) {
             }
             unset($page[$region][$key]);
           }
+        }
+      }
+    }
+
+    if (module_exists('context')) {
+      $context_blocks = $context_reaction->block_get_blocks_by_region($region);
+
+      foreach( $context_blocks as $key => $block ) {
+        if (is_array($block) && array_key_exists('#block', $block)) {
+          $blocks[$region][$block['#block']->bid] = array('weight' => -100);
+          $blocks_array[$block['#block']->bid] = array( 'key' => $key, 'block' => $block);
         }
       }
     }

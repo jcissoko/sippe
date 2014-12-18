@@ -1000,7 +1000,7 @@ function menu_tree($menu_name) {
 }
 
 /**
- * Returns a rendered menu tree.
+ * Returns an output structure for rendering a menu tree.
  *
  * The menu item's LI element is given one of the following classes:
  * - expanded: The menu item is showing its submenu.
@@ -1625,25 +1625,12 @@ function theme_menu_tree($variables) {
 function theme_menu_link(array $variables) {
   $element = $variables['element'];
   $sub_menu = '';
-  if ($element['#below']) {
-    $sub_menu = drupal_render($element['#below']);
-  }
-  if (strpos( $element['#href'], '83')) {       //!!!!!!!! la page nolink est node/83 mais si on met un "/" ça ne fonctionne pas.........
-    $output = '<a href="#" class="nolink">' . $element['#title'] . '</a>';
-  } else {
-  $output = l($element['#title'], $element['#href'], $element['#localized_options']);
-  }
-  return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
-  /*
-  $element = $variables['element'];
-  $sub_menu = '';
 
   if ($element['#below']) {
     $sub_menu = drupal_render($element['#below']);
   }
   $output = l($element['#title'], $element['#href'], $element['#localized_options']);
   return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
-  */
 }
 
 /**
@@ -1939,13 +1926,21 @@ function menu_local_tasks($level = 0) {
     }
 
     // Get all tabs (also known as local tasks) and the root page.
-    $result = db_select('menu_router', NULL, array('fetch' => PDO::FETCH_ASSOC))
-      ->fields('menu_router')
-      ->condition('tab_root', $router_item['tab_root'])
-      ->condition('context', MENU_CONTEXT_INLINE, '<>')
-      ->orderBy('weight')
-      ->orderBy('title')
-      ->execute();
+    $cid = 'local_tasks:' . $router_item['tab_root'];
+    if ($cache = cache_get($cid, 'cache_menu')) {
+      $result = $cache->data;
+    }
+    else {
+      $result = db_select('menu_router', NULL, array('fetch' => PDO::FETCH_ASSOC))
+        ->fields('menu_router')
+        ->condition('tab_root', $router_item['tab_root'])
+        ->condition('context', MENU_CONTEXT_INLINE, '<>')
+        ->orderBy('weight')
+        ->orderBy('title')
+        ->execute()
+        ->fetchAll();
+      cache_set($cid, $result, 'cache_menu');
+    }
     $map = $router_item['original_map'];
     $children = array();
     $tasks = array();
@@ -2500,6 +2495,7 @@ function menu_link_get_preferred($path = NULL, $selected_menu = NULL) {
     $query->addField('ml', 'weight', 'link_weight');
     $query->fields('m');
     $query->condition('ml.link_path', $path_candidates, 'IN');
+    $query->addTag('preferred_menu_links');
 
     // Sort candidates by link path and menu name.
     $candidates = array();

@@ -25,7 +25,3 @@
   // Always print out the entire $form. This renders the remaining pieces of the
   // form that haven't yet been rendered above.
   print drupal_render_children($form);
-
- //if(drupal_get_path_alias($variables["nid"]) == '12' || drupal_get_path_alias($variables["nid"]) == '11'){
-    drupal_add_css(drupal_get_path('module', 'webform') . "/css/formulaireSIPPE.css");
-  //}

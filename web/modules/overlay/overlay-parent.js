@@ -904,10 +904,10 @@ Drupal.overlay.makeDocumentUntabbable = function (context) {
   // child document. The duplicate copy in the underlying document is only for
   // assisting screen-reader users navigating the document with reading commands
   // that follow markup order rather than tab order.
-  /*if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) < 8) {
+  if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) < 8) {
     $('#overlay-disable-message a', context).attr('tabindex', -1);
     return;
-  }*/
+  }
 
   context = context || document.body;
   var $overlay, $tabbable, $hasTabindex;

@@ -55,7 +55,6 @@ function contact_site_form($form, &$form_state) {
       $default_category = key($categories);
     }
   }
- 
 
   if (!$user->uid) {
     $form['#attached']['library'][] = array('system', 'jquery.cookie');
